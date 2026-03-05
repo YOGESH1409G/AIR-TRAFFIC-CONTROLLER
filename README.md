@@ -207,4 +207,44 @@ Aircraft EE505 → (5,18)
 
 ---
 
+## Stage 5 — Controller Class (Collision Detection)
+
+### Changes Made
+Implemented the `Controller` class with Euclidean distance-based collision detection and the required warning format.
+
+### Controller Attributes (private)
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `minSafeDistance` | `double` | Minimum safe separation (default: 5.0 units) |
+
+### Controller Methods
+| Method | Return | Description |
+|--------|--------|-------------|
+| `Controller(safeDistance)` | — | Constructor, sets safe distance threshold |
+| `checkCollisions(airspace)` | `int` | Checks all pairs, returns warning count |
+| `getMinSafeDistance()` | `double` | Returns current safe distance |
+| `setMinSafeDistance(d)` | `void` | Updates safe distance threshold |
+| `computeDistance(a, b)` | `double` | Private — Euclidean distance between two aircraft |
+| `raiseWarning(a, b, dist)` | `void` | Private — prints collision warning |
+
+### Collision Rule
+Euclidean distance formula:
+```
+d = sqrt((x2 - x1)^2 + (y2 - y1)^2)
+
+If d < safe_distance → WARNING
+```
+
+### Warning Output Format
+```
+WARNING: Potential collision between Aircraft AA101 and BB202
+```
+
+### Algorithm
+- Checks all unique pairs: O(n*(n-1)/2)
+- Stateless — operates on current airspace snapshot each step
+- Configurable threshold via `setMinSafeDistance()`
+
+---
+
 > **Next stages** will add more features on top of this core engine.
