@@ -180,4 +180,31 @@ if y >= height → y = height - 1
 
 ---
 
+## Stage 4 — Radar Class (Full Implementation)
+
+### Changes Made
+Refactored the `Radar` class with the required `displayAirspace()` method and clean output format.
+
+### Radar Methods
+| Method | Return | Description |
+|--------|--------|-------------|
+| `displayAirspace(airspace)` | `void` | Prints each aircraft ID and position |
+| `printGrid(airspace)` | `void` | Renders ASCII grid of the airspace |
+
+### Output Format
+```
+Aircraft AA101 → (2,3)
+Aircraft BB202 → (25,15)
+Aircraft CC303 → (10,10)
+Aircraft DD404 → (15,5)
+Aircraft EE505 → (5,18)
+```
+
+### Design Principles
+- **Read-only observer** — does not modify aircraft or airspace data
+- **Simple interface** — one primary method `displayAirspace()`
+- **Clean output** — minimal, scannable `Aircraft <ID> → (<x>,<y>)` format
+
+---
+
 > **Next stages** will add more features on top of this core engine.

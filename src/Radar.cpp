@@ -1,30 +1,24 @@
 #include "Radar.h"
 #include <iostream>
-#include <iomanip>
 #include <vector>
 
-// ─── Display Aircraft Table ─────────────────────────────────────────────────
-void Radar::display(const Airspace& airspace) const {
+// ─── displayAirspace ────────────────────────────────────────────────────────
+// Displays the current state of the airspace.
+// Prints all aircraft IDs and their positions in a clean format.
+void Radar::displayAirspace(const Airspace& airspace) const {
     const auto& list = airspace.getAircraftList();
 
-    std::cout << "\n  ╔══════════════════════════════════════════════════╗\n";
-    std::cout << "  ║               RADAR — Aircraft Status            ║\n";
-    std::cout << "  ╠══════════════════════════════════════════════════╣\n";
-    std::cout << "  ║  ID        X        Y    Speed   Dir            ║\n";
-    std::cout << "  ╠══════════════════════════════════════════════════╣\n";
+    std::cout << "\n  ┌────────────────────────────────────┐\n";
+    std::cout << "  │   RADAR — Current Airspace State   │\n";
+    std::cout << "  └────────────────────────────────────┘\n";
 
     for (const auto& a : list) {
-        std::cout << "  ║  "
-                  << std::left  << std::setw(8)  << a.getId()
-                  << std::right << std::setw(6)  << a.getX()
-                  << std::setw(9) << a.getY()
-                  << std::setw(8) << a.getSpeed()
-                  << "   " << std::left << std::setw(4) << a.getDirection()
-                  << "         ║" << std::endl;
+        std::cout << "  Aircraft " << a.getId()
+                  << " \u2192 (" << a.getX() << "," << a.getY() << ")"
+                  << std::endl;
     }
 
-    std::cout << "  ╚══════════════════════════════════════════════════╝\n";
-    std::cout << "  Total aircraft: " << list.size() << "\n";
+    std::cout << "\n  Total aircraft: " << list.size() << "\n";
 }
 
 // ─── Print ASCII Grid ───────────────────────────────────────────────────────

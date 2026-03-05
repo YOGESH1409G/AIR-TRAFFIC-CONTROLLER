@@ -27,7 +27,7 @@ void SimulationEngine::run() {
 
     // Show initial state
     std::cout << "\n  ─── INITIAL STATE ───────────────────────────────────\n";
-    radar.display(airspace);
+    radar.displayAirspace(airspace);
     radar.printGrid(airspace);
 
     // Main simulation loop
@@ -56,7 +56,7 @@ void SimulationEngine::step() {
     }
 
     // 3. Display radar
-    radar.display(airspace);
+    radar.displayAirspace(airspace);
     radar.printGrid(airspace);
 }
 
