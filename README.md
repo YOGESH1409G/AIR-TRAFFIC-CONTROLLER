@@ -4,6 +4,120 @@ A **C++ Object-Oriented** console-based simulation that models an air traffic co
 
 ---
 
+## UML Class Diagram
+
+```mermaid
+classDiagram
+    direction TB
+
+    class Aircraft {
+        -string id
+        -int x
+        -int y
+        -int speed
+        -string direction
+        +Aircraft(id, x, y, speed, direction)
+        +move() void
+        +getId() string
+        +getPosition() pair~int,int~
+        +getX() int
+        +getY() int
+        +getSpeed() int
+        +getDirection() string
+        +changeDirection(newDir) void
+        +setX(x) void
+        +setY(y) void
+        +setSpeed(speed) void
+        +printInfo() void
+    }
+
+    class WeatherZone {
+        &lt;&lt;struct&gt;&gt;
+        +string name
+        +int x
+        +int y
+        +int width
+        +int height
+        +contains(px, py) bool
+    }
+
+    class Airspace {
+        -int width
+        -int height
+        -vector~Aircraft~ aircraftList
+        -vector~WeatherZone~ weatherZones
+        -reverseDirection(dir)$ string
+        +Airspace(width, height)
+        +addAircraft(aircraft) void
+        +removeAircraft(id) bool
+        +updateAircraftPositions() void
+        +isInBounds(x, y) bool
+        +addWeatherZone(zone) void
+        +getWeatherZones() const vector~WeatherZone~
+        +isInWeatherZone(x, y) bool
+        +getAircraftList() const vector~Aircraft~
+        +getAircraftListMutable() vector~Aircraft~
+        +getWidth() int
+        +getHeight() int
+        +getAircraftCount() int
+    }
+
+    class Radar {
+        +displayAirspace(airspace) void
+        +printGrid(airspace) void
+    }
+
+    class Controller {
+        -double minSafeDistance
+        -computeDistance(a, b) double
+        -raiseWarning(a, b, dist) void
+        +Controller(minSafeDistance)
+        +checkCollisions(airspace) int
+        +getMinSafeDistance() double
+        +setMinSafeDistance(d) void
+    }
+
+    class SimulationEngine {
+        -Airspace airspace
+        -Radar radar
+        -Controller controller
+        -int maxSteps
+        -int currentStep
+        +SimulationEngine(w, h, steps, safeDist)
+        +SimulationEngine(airspace, radar, controller, steps)
+        +addAircraft(aircraft) void
+        +run() void
+        +step() void
+        +printBanner() void
+        +printSummary() void
+    }
+
+    SimulationEngine *-- Airspace : owns
+    SimulationEngine *-- Radar : owns
+    SimulationEngine *-- Controller : owns
+    Airspace *-- "0..*" Aircraft : manages
+    Airspace *-- "0..*" WeatherZone : enforces
+    Radar ..> Airspace : reads
+    Controller ..> Airspace : inspects
+    Controller ..> Aircraft : computes distance
+```
+
+### Relationship Key
+| Symbol | Meaning | Example |
+|--------|---------|---------|
+| `*--` | **Composition** (owns, lifecycle-bound) | SimulationEngine owns Airspace |
+| `..>` | **Dependency** (uses, read-only) | Radar reads Airspace |
+| `0..*` | **Multiplicity** (zero-to-many) | Airspace manages 0..* Aircraft |
+
+### OOP Design Patterns Used
+- **Composition over Inheritance** — SimulationEngine owns Airspace, Radar, Controller as value members (no raw pointers, no inheritance hierarchies)
+- **Single Responsibility Principle** — Each class has exactly one job: Aircraft moves, Airspace manages boundaries + zones, Radar displays, Controller detects, Engine orchestrates
+- **Encapsulation** — All data members are `private`; access only through getters/setters
+- **Observer Pattern (lightweight)** — Radar and Controller read Airspace state without modifying it (dependency, not composition)
+- **Strategy-ready** — Collision detection and avoidance logic are isolated in Controller and Airspace, easily replaceable
+
+---
+
 ## Stage 1 — Core Architecture & Simulation Engine
 
 ### Features Implemented
