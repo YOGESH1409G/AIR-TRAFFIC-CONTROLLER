@@ -37,10 +37,28 @@ bool Airspace::removeAircraft(const std::string& id) {
 //    Aircraft that would fly out of bounds are stopped at the edge.
 void Airspace::updateAircraftPositions() {
     for (auto& aircraft : aircraftList) {
+        // Save pre-move position
+        int oldX = aircraft.getX();
+        int oldY = aircraft.getY();
+
         // Step 1 — Move based on speed and direction
         aircraft.move();
 
-        // Step 2 — Enforce grid boundaries (clamping)
+        // Step 2 — Weather zone avoidance
+        // If the new position is inside a restricted zone, revert move
+        // and reverse direction so the aircraft bounces away.
+        if (isInWeatherZone(aircraft.getX(), aircraft.getY())) {
+            aircraft.setX(oldX);
+            aircraft.setY(oldY);
+            std::string newDir = reverseDirection(aircraft.getDirection());
+            aircraft.changeDirection(newDir);
+            std::cout << "  [AIRSPACE] Aircraft " << aircraft.getId()
+                      << " reversed (" << aircraft.getDirection()
+                      << ") — weather zone ahead\n";
+            continue;  // skip boundary clamping — position unchanged
+        }
+
+        // Step 3 — Enforce grid boundaries (clamping)
         int ax = aircraft.getX();
         int ay = aircraft.getY();
 
@@ -73,4 +91,33 @@ int Airspace::getHeight() const { return height; }
 
 int Airspace::getAircraftCount() const {
     return static_cast<int>(aircraftList.size());
+}
+
+// ─── Weather Zones ──────────────────────────────────────────────────────────
+
+void Airspace::addWeatherZone(const WeatherZone& zone) {
+    weatherZones.push_back(zone);
+    std::cout << "  [AIRSPACE] Weather zone \"" << zone.name
+              << "\" added at (" << zone.x << "," << zone.y
+              << ") size " << zone.width << "x" << zone.height << "\n";
+}
+
+const std::vector<WeatherZone>& Airspace::getWeatherZones() const {
+    return weatherZones;
+}
+
+bool Airspace::isInWeatherZone(int x, int y) const {
+    for (const auto& zone : weatherZones) {
+        if (zone.contains(x, y)) return true;
+    }
+    return false;
+}
+
+// ─── reverseDirection (private static helper) ───────────────────────────────
+std::string Airspace::reverseDirection(const std::string& dir) {
+    if (dir == "N") return "S";
+    if (dir == "S") return "N";
+    if (dir == "E") return "W";
+    if (dir == "W") return "E";
+    return dir;  // unknown — return as-is
 }

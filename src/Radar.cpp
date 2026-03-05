@@ -19,6 +19,19 @@ void Radar::displayAirspace(const Airspace& airspace) const {
     }
 
     std::cout << "\n  Total aircraft: " << list.size() << "\n";
+
+    // Show weather zones if any exist
+    const auto& zones = airspace.getWeatherZones();
+    if (!zones.empty()) {
+        std::cout << "  Weather Zones: ";
+        for (size_t i = 0; i < zones.size(); ++i) {
+            if (i > 0) std::cout << ", ";
+            std::cout << zones[i].name << " ("
+                      << zones[i].x << "," << zones[i].y << " "
+                      << zones[i].width << "x" << zones[i].height << ")";
+        }
+        std::cout << "\n";
+    }
 }
 
 // ─── Print ASCII Grid ───────────────────────────────────────────────────────
@@ -30,7 +43,19 @@ void Radar::printGrid(const Airspace& airspace) const {
     // Create empty grid
     std::vector<std::vector<char>> grid(h, std::vector<char>(w, '.'));
 
-    // Place aircraft on grid (use first char of ID)
+    // Render weather zones as '#'
+    const auto& zones = airspace.getWeatherZones();
+    for (const auto& zone : zones) {
+        for (int zy = zone.y; zy < zone.y + zone.height; ++zy) {
+            for (int zx = zone.x; zx < zone.x + zone.width; ++zx) {
+                if (zx >= 0 && zx < w && zy >= 0 && zy < h) {
+                    grid[h - 1 - zy][zx] = '#';
+                }
+            }
+        }
+    }
+
+    // Place aircraft on grid (use first char of ID — overwrites '#')
     for (const auto& a : list) {
         int gx = a.getX();
         int gy = a.getY();

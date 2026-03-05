@@ -292,4 +292,52 @@ FOR currentStep = 1 TO maxSteps (20):
 
 ---
 
+## Weather Zones — Restricted Airspace
+
+### Overview
+Rectangular **weather zones** can be placed anywhere in the airspace. Aircraft attempting to enter a zone will have their move **reverted** and their direction **reversed** (N↔S, E↔W), effectively bouncing away.
+
+### WeatherZone Struct (`include/WeatherZone.h`)
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Human-readable label (e.g. "Storm") |
+| `x` | `int` | Bottom-left corner X |
+| `y` | `int` | Bottom-left corner Y |
+| `width` | `int` | Extends rightward from x |
+| `height` | `int` | Extends upward from y |
+| `contains(px, py)` | `bool` | Returns true if (px, py) is inside the zone |
+
+### Avoidance Logic (in `Airspace::updateAircraftPositions`)
+```
+for each aircraft:
+  1. Save old position (oldX, oldY)
+  2. Call move()
+  3. If new position is inside a weather zone:
+       → Revert to (oldX, oldY)
+       → Reverse direction (N↔S, E↔W)
+       → Print "[AIRSPACE] Aircraft <ID> reversed — weather zone ahead"
+       → Skip boundary clamping
+  4. Otherwise clamp to grid boundaries as usual
+```
+
+### Radar Display
+- Weather zone cells rendered as `#` on the ASCII grid
+- Aircraft markers overwrite `#` if they share a cell
+- Zone summary printed below the aircraft table
+
+### Demo Zones (in `main.cpp`)
+| Name | Position | Size | Purpose |
+|------|----------|------|---------|
+| Storm | (14, 8) | 5×5 | Blocks A1/A2 on row y=10 — forces reversal |
+| Fog | (3, 33) | 4×4 | Blocks A3's northbound path — forces reversal |
+
+### New Airspace Methods
+| Method | Return | Description |
+|--------|--------|-------------|
+| `addWeatherZone(zone)` | `void` | Registers a restricted weather zone |
+| `getWeatherZones()` | `const vector&` | Read-only access to all zones |
+| `isInWeatherZone(x, y)` | `bool` | Checks if a point is inside any zone |
+
+---
+
 > **Next stages** will add more features on top of this core engine.

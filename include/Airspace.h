@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Aircraft.h"
+#include "WeatherZone.h"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Airspace — Manages all aircraft within a bounded 2D simulation grid.
@@ -15,7 +16,10 @@
 //   • Provide read-only and mutable access to the aircraft list
 //
 // Designed to be easy to extend with features like:
-//   - restricted zones / weather zones
+//   • Maintain a list of restricted weather zones
+//   • Prevent aircraft from entering weather zones (revert + reverse)
+//
+// Designed to be easy to extend with features like:
 //   - landing queues
 //   - dynamic aircraft removal
 // ─────────────────────────────────────────────────────────────────────────────
@@ -24,7 +28,11 @@ class Airspace {
 private:
     int width;                          // Grid width  (valid x: 0 to width-1)
     int height;                         // Grid height (valid y: 0 to height-1)
-    std::vector<Aircraft> aircraftList; // All active aircraft (STL vector)
+    std::vector<Aircraft> aircraftList;      // All active aircraft (STL vector)
+    std::vector<WeatherZone> weatherZones;    // Restricted weather zones
+
+    // Reverse a direction string: N↔S, E↔W.
+    static std::string reverseDirection(const std::string& dir);
 
 public:
     // ─── Constructor ────────────────────────────────────────────────────
@@ -47,6 +55,17 @@ public:
 
     // Check if a given (x, y) coordinate is within the airspace bounds.
     bool isInBounds(int x, int y) const;
+
+    // ─── Weather Zones ──────────────────────────────────────────────────
+
+    // Add a restricted weather zone to the airspace.
+    void addWeatherZone(const WeatherZone& zone);
+
+    // Returns the list of weather zones (read-only).
+    const std::vector<WeatherZone>& getWeatherZones() const;
+
+    // Check if a point falls inside any weather zone.
+    bool isInWeatherZone(int x, int y) const;
 
     // ─── Getters ────────────────────────────────────────────────────────
 

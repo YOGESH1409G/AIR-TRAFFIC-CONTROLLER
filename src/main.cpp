@@ -19,6 +19,12 @@ int main() {
     std::cout << "  [main] Airspace created (" << AIRSPACE_WIDTH
               << " x " << AIRSPACE_HEIGHT << ")\n";
 
+    // ─── Add Restricted Weather Zones ───────────────────────────────────
+    // Storm zone: 5×5 block at (14,8) — sits on y=10 row, blocks A1/A2 path
+    airspace.addWeatherZone({"Storm", 14, 8, 5, 5});
+    // Fog zone: 4×4 block at (3,33) — sits in A3's northbound path
+    airspace.addWeatherZone({"Fog",    3, 33, 4, 4});
+
     // ─── Step 2: Create Aircraft objects ────────────────────────────────
     Aircraft a1("A1", 10, 10, 1, "E");   // moving East
     Aircraft a2("A2", 20, 10, 1, "W");   // moving West  → heads toward A1!
