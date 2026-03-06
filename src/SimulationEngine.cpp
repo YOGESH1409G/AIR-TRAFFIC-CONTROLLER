@@ -60,7 +60,7 @@ void SimulationEngine::run() {
 // ─── Single Step ────────────────────────────────────────────────────────────
 // Executes one simulation time-step in three phases:
 //   1. updateAircraftPositions() — move every aircraft by its speed/direction
-//   2. checkCollisions()         — Euclidean distance check for all pairs
+//   2. resolveCollisions()       — detect AND auto-reroute if too close
 //   3. displayAirspace()         — print status table + ASCII grid
 void SimulationEngine::step() {
     std::cout << "\n  ═══ STEP " << currentStep << " / " << maxSteps
@@ -69,10 +69,10 @@ void SimulationEngine::step() {
     // 1. Update all aircraft positions
     airspace.updateAircraftPositions();
 
-    // 2. Check for collisions
-    int warnings = controller.checkCollisions(airspace);
-    if (warnings == 0) {
-        std::cout << "  ✓  No collision warnings.\n";
+    // 2. Detect collisions AND auto-reroute if needed
+    int avoidances = controller.resolveCollisions(airspace);
+    if (avoidances == 0) {
+        std::cout << "  ✓  All aircraft safe — no avoidance needed.\n";
     }
 
     // 3. Display radar
@@ -93,11 +93,13 @@ void SimulationEngine::printBanner() const {
 }
 
 // ─── Summary ────────────────────────────────────────────────────────────────
-void SimulationEngine::printSummary() const {
+void SimulationEngine::printSummary() {
     std::cout << "\n  ╔══════════════════════════════════════════════════════╗\n";
     std::cout << "  ║              SIMULATION COMPLETE                     ║\n";
     std::cout << "  ╠══════════════════════════════════════════════════════╣\n";
-    std::cout << "  ║  Total Steps Run: " << maxSteps << std::string(35 - std::to_string(maxSteps).length(), ' ') << "║\n";
-    std::cout << "  ║  Aircraft Tracked: " << airspace.getAircraftCount() << std::string(34 - std::to_string(airspace.getAircraftCount()).length(), ' ') << "║\n";
+    int avoided = controller.getTotalAvoidances();
+    std::cout << "  ║  Total Steps Run:    " << maxSteps << std::string(32 - std::to_string(maxSteps).length(), ' ') << "║\n";
+    std::cout << "  ║  Aircraft Tracked:   " << airspace.getAircraftCount() << std::string(32 - std::to_string(airspace.getAircraftCount()).length(), ' ') << "║\n";
+    std::cout << "  ║  Collisions Avoided: " << avoided << std::string(32 - std::to_string(avoided).length(), ' ') << "║\n";
     std::cout << "  ╚══════════════════════════════════════════════════════╝\n\n";
 }

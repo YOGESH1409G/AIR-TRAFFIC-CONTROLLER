@@ -29,16 +29,22 @@ int main() {
     Aircraft a1("A1", 10, 10, 1, "E");   // moving East
     Aircraft a2("A2", 20, 10, 1, "W");   // moving West  → heads toward A1!
     Aircraft a3("A3",  5, 30, 1, "N");   // moving North
+    Aircraft a4("A4", 10, 20, 1, "E");   // moving East  → converges with A5!
+    Aircraft a5("A5", 14, 20, 1, "W");   // moving West  → triggers collision avoidance
 
     std::cout << "  [main] Aircraft created:\n";
     a1.printInfo();
     a2.printInfo();
     a3.printInfo();
+    a4.printInfo();
+    a5.printInfo();
 
     // ─── Step 3: Add Aircraft to Airspace ───────────────────────────────
     airspace.addAircraft(a1);
     airspace.addAircraft(a2);
     airspace.addAircraft(a3);
+    airspace.addAircraft(a4);
+    airspace.addAircraft(a5);
 
     // ─── Step 4: Create Radar and Controller ────────────────────────────
     Radar radar;

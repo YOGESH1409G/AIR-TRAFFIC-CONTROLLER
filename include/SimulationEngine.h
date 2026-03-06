@@ -52,8 +52,8 @@ public:
     // Print welcome banner at simulation start.
     void printBanner() const;
 
-    // Print summary statistics at simulation end.
-    void printSummary() const;
+    // Print summary statistics at simulation end (reads avoidance count).
+    void printSummary();
 };
 
 #endif // SIMULATIONENGINE_H
