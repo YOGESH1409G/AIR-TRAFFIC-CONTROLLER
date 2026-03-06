@@ -1,4 +1,5 @@
 #include "Airspace.h"
+#include "AnsiColors.h"
 #include <algorithm>
 #include <iostream>
 
@@ -52,9 +53,11 @@ void Airspace::updateAircraftPositions() {
             aircraft.setY(oldY);
             std::string newDir = reverseDirection(aircraft.getDirection());
             aircraft.changeDirection(newDir);
-            std::cout << "  [AIRSPACE] Aircraft " << aircraft.getId()
+            std::cout << "  " << clr::BOLD_YELLOW
+                      << "[AIRSPACE] Aircraft " << aircraft.getId()
                       << " reversed (" << aircraft.getDirection()
-                      << ") — weather zone ahead\n";
+                      << ") -- weather zone ahead"
+                      << clr::RESET << "\n";
             continue;  // skip boundary clamping — position unchanged
         }
 
@@ -97,9 +100,11 @@ int Airspace::getAircraftCount() const {
 
 void Airspace::addWeatherZone(const WeatherZone& zone) {
     weatherZones.push_back(zone);
-    std::cout << "  [AIRSPACE] Weather zone \"" << zone.name
+    std::cout << "  " << clr::BOLD_BLUE
+              << "[AIRSPACE] Weather zone \"" << zone.name
               << "\" added at (" << zone.x << "," << zone.y
-              << ") size " << zone.width << "x" << zone.height << "\n";
+              << ") size " << zone.width << "x" << zone.height
+              << clr::RESET << "\n";
 }
 
 const std::vector<WeatherZone>& Airspace::getWeatherZones() const {
